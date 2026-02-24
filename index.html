@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where Is My Stuff?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0e0c;
+      --surface: #1a1916;
+      --border: #2e2c27;
+      --accent: #f5c542;
+      --accent2: #e07b3f;
+      --text: #f0ece0;
+      --muted: #7a7669;
+      --danger: #e05c5c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    header h1 span { color: var(--accent); }
+
+    header p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .container { max-width: 640px; margin: 0 auto; }
+
+    /* Form */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+
+    button {
+      background: var(--accent);
+      color: #0f0e0c;
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1.2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    button:hover { background: #f7d165; }
+    button:active { transform: scale(0.97); }
+
+    /* Search */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding-left: 2.5rem;
+      font-size: 1rem;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    /* Stats */
+    .stats {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .stats strong { color: var(--accent); }
+
+    /* List */
+    #list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeIn 0.2s ease;
+      transition: border-color 0.2s;
+    }
+
+    .item:hover { border-color: #3e3b33; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .item-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .item-info { flex: 1; min-width: 0; }
+
+    .item-thing {
+      font-weight: 700;
+      font-size: 1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-place {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      margin-top: 0.15rem;
+    }
+
+    .item-place::before { content: "📍 "; }
+
+    .item-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .btn-delete:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    .empty span { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr 1fr; }
+      .form-row button { grid-column: 1 / -1; }
+      .item-date { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Where is my <span>stuff?</span></h1>
+      <p>// your personal inventory — saved locally in the browser</p>
+    </header>
+
+    <div class="form-card">
+      <div class="form-row">
+        <div class="field">
+          <label for="thing">Thing</label>
+          <input id="thing" type="text" placeholder="e.g. Christmas lights" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="place">Place</label>
+          <input id="place" type="text" placeholder="e.g. Garage box #3" autocomplete="off" />
+        </div>
+        <button id="btn-add">+ Add</button>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="text" placeholder="Search your stuff..." />
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div id="list"></div>
+  </div>
+
+  <script>
+    const EMOJIS = {
+      default: '📦',
+      tree: '🎄', xmas: '🎄', christmas: '🎄',
+      light: '💡', lights: '💡',
+      tool: '🔧', screwdriver: '🔧', wrench: '🔧', hammer: '🔨',
+      book: '📚', books: '📚',
+      key: '🔑', keys: '🔑',
+      phone: '📱', charger: '🔌',
+      shoes: '👟', jacket: '🧥', coat: '🧥',
+      passport: '🛂', document: '📄', documents: '📄',
+      cable: '🔌', cables: '🔌',
+      camera: '📷', glasses: '👓',
+      bike: '🚲', box: '📦', bag: '👜',
+    };
+
+    function getEmoji(thing) {
+      const lower = thing.toLowerCase();
+      for (const [key, emoji] of Object.entries(EMOJIS)) {
+        if (lower.includes(key)) return emoji;
+      }
+      return EMOJIS.default;
+    }
+
+    function loadItems() {
+      return JSON.parse(localStorage.getItem('stuff') || '[]');
+    }
+
+    function saveItems(items) {
+      localStorage.setItem('stuff', JSON.stringify(items));
+    }
+
+    function formatDate(ts) {
+      return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function render(filter = '') {
+      const items = loadItems();
+      const listEl = document.getElementById('list');
+      const statsEl = document.getElementById('stats');
+
+      const filtered = filter
+        ? items.filter(i =>
+            i.thing.toLowerCase().includes(filter) ||
+            i.place.toLowerCase().includes(filter)
+          )
+        : items;
+
+      statsEl.innerHTML = filter
+        ? `<strong>${filtered.length}</strong> result${filtered.length !== 1 ? 's' : ''} for "<strong>${filter}</strong>" — <strong>${items.length}</strong> total items`
+        : `<strong>${items.length}</strong> item${items.length !== 1 ? 's' : ''} tracked`;
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = items.length === 0
+          ? `<div class="empty"><span>📦</span>Nothing here yet.<br>Add your first item above!</div>`
+          : `<div class="empty"><span>🔍</span>No items match "<strong>${filter}</strong>"</div>`;
+        return;
+      }
+
+      listEl.innerHTML = '';
+      [...filtered].reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="item-icon">${getEmoji(item.thing)}</div>
+          <div class="item-info">
+            <div class="item-thing">${item.thing}</div>
+            <div class="item-place">${item.place}</div>
+          </div>
+          <div class="item-date">${formatDate(item.ts)}</div>
+          <button class="btn-delete" data-id="${item.id}" title="Remove">✕</button>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function addItem() {
+      const thing = document.getElementById('thing').value.trim();
+      const place = document.getElementById('place').value.trim();
+      if (!thing || !place) return;
+
+      const items = loadItems();
+      items.push({ id: Date.now(), thing, place, ts: Date.now() });
+      saveItems(items);
+
+      document.getElementById('thing').value = '';
+      document.getElementById('place').value = '';
+      document.getElementById('thing').focus();
+      render(document.getElementById('search').value.toLowerCase());
+    }
+
+    document.getElementById('btn-add').addEventListener('click', addItem);
+
+    document.getElementById('place').addEventListener('keydown', e => {
+      if (e.key === 'Enter') addItem();
+    });
+
+    document.getElementById('thing').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('place').focus();
+    });
+
+    document.getElementById('search').addEventListener('input', e => {
+      render(e.target.value.toLowerCase().trim());
+    });
+
+    document.getElementById('list').addEventListener('click', e => {
+      const btn = e.target.closest('.btn-delete');
+      if (!btn) return;
+      const id = Number(btn.dataset.id);
+      const items = loadItems().filter(i => i.id !== id);
+      saveItems(items);
+      render(document.getElementById('search').value.toLowerCase());
+    });
+
+    render();
+  </script>
+</body>
+</html>
