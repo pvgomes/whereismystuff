@@ -11,6 +11,7 @@ const EMOJIS = {
   cable: '🔌', cables: '🔌',
   camera: '📷', glasses: '👓',
   bike: '🚲', box: '📦', bag: '👜',
+  cup: '☕', mug: '☕',
 };
 
 function getEmoji(thing) {
